@@ -2,19 +2,29 @@
 <img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
 </div>
 
-# Run and deploy your AI Studio app
+# Snake Geração Tech 🐍
 
-This contains everything you need to run your app locally.
+Jogo da cobrinha interativo feito para os colegas de turma do Geração Tech, com integração de IA usando Gemini.
 
-View your app in AI Studio: https://ai.studio/apps/drive/1YxoK63cjXlVSWcnPEy-dBjSQm2NekseY
+## 🚀 Run Locally
 
-## Run Locally
-
-**Prerequisites:**  Node.js
-
+**Prerequisites:** Node.js
 
 1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
+   ```bash
+   npm install
+   ```
+2. Set the `VITE_GEMINI_API_KEY` in `.env.local` to your Gemini API key
 3. Run the app:
-   `npm run dev`
+   ```bash
+   npm run dev
+   ```
+
+## 🎮 Features
+
+- Jogo Snake clássico com múltiplas dificuldades
+- Sistema de ranking local
+- Integração com Gemini AI para títulos e comentários
+- Tema claro/escuro
+- Design responsivo para mobile e desktop
+- Efeitos visuais e sonoros
