@@ -1,0 +1,5 @@
+{
+  "name": "Snake AI Live",
+  "description": "Um jogo da cobrinha moderno e responsivo com comentários ao vivo gerados por IA baseados no seu perfil.",
+  "requestFramePermissions": []
+}
