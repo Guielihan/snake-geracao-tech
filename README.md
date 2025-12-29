@@ -1,6 +1,6 @@
 # Snake Geração Tech 🐍
 
-Jogo da cobrinha interativo feito para os colegas de turma do Geração Tech, com integração de IA usando Gemini.
+Jogo da cobrinha interativo feito para os colegas de turma do Geração Tech e com integração.
 
 ## 🚀 Run Locally
 
