@@ -8,6 +8,7 @@ export const rankingService = {
   // Salvar uma nova entrada no ranking
   async saveEntry(entry: RankingEntry): Promise<boolean> {
     try {
+      console.log('Salvando entrada no ranking:', entry);
       const response = await fetch(`${API_BASE_URL}/ranking`, {
         method: 'POST',
         headers: {
@@ -17,10 +18,13 @@ export const rankingService = {
       });
 
       if (!response.ok) {
-        console.error('Failed to save ranking entry:', response.statusText);
+        const errorText = await response.text();
+        console.error('Failed to save ranking entry:', response.status, response.statusText, errorText);
         return false;
       }
 
+      const result = await response.json();
+      console.log('Entrada salva com sucesso:', result);
       return true;
     } catch (error) {
       console.error('Error saving ranking entry:', error);
@@ -31,6 +35,7 @@ export const rankingService = {
   // Buscar todos os rankings
   async getRankings(): Promise<RankingEntry[]> {
     try {
+      console.log('Buscando rankings de:', API_BASE_URL);
       const response = await fetch(`${API_BASE_URL}/ranking`, {
         method: 'GET',
         headers: {
@@ -39,11 +44,13 @@ export const rankingService = {
       });
 
       if (!response.ok) {
-        console.error('Failed to fetch rankings:', response.statusText);
+        const errorText = await response.text();
+        console.error('Failed to fetch rankings:', response.status, response.statusText, errorText);
         return [];
       }
 
       const data = await response.json();
+      console.log('Rankings recebidos:', data.rankings?.length || 0, 'entradas');
       return data.rankings || [];
     } catch (error) {
       console.error('Error fetching rankings:', error);
