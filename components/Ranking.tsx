@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { RankingEntry } from '../types';
 import { playSound } from '../utils/audioUtils';
+import { rankingService } from '../services/rankingService';
 
 interface RankingProps {
   onBack: () => void;
@@ -11,30 +12,36 @@ export const Ranking: React.FC<RankingProps> = ({ onBack }) => {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    // Simulate a tiny delay for smooth transition effect
-    const loadData = () => {
-      const stored = localStorage.getItem('snake_global_rankings');
-      if (stored) {
-        try {
-          const parsed: RankingEntry[] = JSON.parse(stored);
-          // Ensure sorted by score and limit to top 15
-          const sorted = parsed.sort((a, b) => b.score - a.score).slice(0, 15);
-          setData(sorted);
-        } catch (e) {
-          console.error("Ranking corrupt", e);
-          setData([]);
-        }
-      } else {
+    // Carregar dados do backend (ranking global)
+    const loadData = async () => {
+      try {
+        const rankings = await rankingService.getRankings();
+        // Ordenar e limitar a top 15 para exibição
+        const sorted = rankings.sort((a, b) => b.score - a.score).slice(0, 15);
+        setData(sorted);
+        
+        // Trigger entrance animation
+        setTimeout(() => {
+          setIsVisible(true);
+          playSound.fanfare();
+        }, 100);
+      } catch (e) {
+        console.error("Error loading rankings:", e);
         setData([]);
+        setTimeout(() => {
+          setIsVisible(true);
+        }, 100);
       }
-      // Trigger entrance animation
-      setTimeout(() => {
-        setIsVisible(true);
-        playSound.fanfare();
-      }, 100);
     };
     
     loadData();
+
+    // Atualizar ranking a cada 5 segundos para manter sincronizado
+    const interval = setInterval(() => {
+      loadData();
+    }, 5000);
+
+    return () => clearInterval(interval);
   }, []);
 
   const handleShare = () => {
@@ -69,6 +76,8 @@ export const Ranking: React.FC<RankingProps> = ({ onBack }) => {
   };
 
   const getInitials = (name: string) => {
+    if (!name || name.length === 0) return '??';
+    if (name.length === 1) return name.toUpperCase() + name.toUpperCase();
     return name.slice(0, 2).toUpperCase();
   };
 

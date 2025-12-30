@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { UserProfile, GameStatus, Coordinate, Direction, Difficulty, RankingEntry } from '../types';
 import { GRID_SIZE, getRandomCoordinate, checkCollision } from '../utils/gameUtils';
 import { playSound } from '../utils/audioUtils';
+import { rankingService } from '../services/rankingService';
 
 interface SnakeGameProps {
   user: UserProfile;
@@ -124,7 +125,7 @@ export const SnakeGame: React.FC<SnakeGameProps> = ({ user, onLogout, isDarkMode
 
   // Visual Effects Loop (Particles & Floating Text)
   useEffect(() => {
-    let animationFrame: number;
+    let animationFrame: number | null = null;
     
     const updateEffects = () => {
       // Particles
@@ -148,7 +149,11 @@ export const SnakeGame: React.FC<SnakeGameProps> = ({ user, onLogout, isDarkMode
     if (particles.length > 0 || floatingTexts.length > 0) {
       animationFrame = requestAnimationFrame(updateEffects);
     }
-    return () => cancelAnimationFrame(animationFrame);
+    return () => {
+      if (animationFrame !== null) {
+        cancelAnimationFrame(animationFrame);
+      }
+    };
   }, [particles.length, floatingTexts.length]);
 
   const tryStartGame = () => {
@@ -175,8 +180,9 @@ export const SnakeGame: React.FC<SnakeGameProps> = ({ user, onLogout, isDarkMode
   };
 
   const startCountdown = () => {
-    setSnake([{ x: 10, y: 10 }, { x: 9, y: 10 }, { x: 8, y: 10 }]);
-    setFood(getRandomCoordinate([{ x: 10, y: 10 }]));
+    const initialSnake = [{ x: 10, y: 10 }, { x: 9, y: 10 }, { x: 8, y: 10 }];
+    setSnake(initialSnake);
+    setFood(getRandomCoordinate(initialSnake));
     
     currentDirection.current = Direction.RIGHT;
     lastProcessedDirection.current = Direction.RIGHT;
@@ -194,14 +200,18 @@ export const SnakeGame: React.FC<SnakeGameProps> = ({ user, onLogout, isDarkMode
 
   const spawnParticles = (x: number, y: number, color: string) => {
     const newParticles: Particle[] = [];
+    // Convert grid coordinates to percentage coordinates (0-100%)
+    const centerX = ((x + 0.5) / GRID_SIZE) * 100;
+    const centerY = ((y + 0.5) / GRID_SIZE) * 100;
+    
     for (let i = 0; i < 8; i++) {
       const angle = (Math.PI * 2 * i) / 8;
       newParticles.push({
         id: Math.random(),
-        x: x * 100 + 50, 
-        y: y * 100 + 50,
-        vx: Math.cos(angle) * 0.5,
-        vy: Math.sin(angle) * 0.5,
+        x: centerX,
+        y: centerY,
+        vx: Math.cos(angle) * 0.2, // Reduced velocity for better visual
+        vy: Math.sin(angle) * 0.2,
         life: 1.0,
         color
       });
@@ -210,10 +220,13 @@ export const SnakeGame: React.FC<SnakeGameProps> = ({ user, onLogout, isDarkMode
   };
 
   const addFloatingText = (x: number, y: number, text: string) => {
+    // Convert grid coordinates to percentage coordinates (0-100%)
+    const centerX = ((x + 0.5) / GRID_SIZE) * 100;
+    const centerY = (y / GRID_SIZE) * 100;
     setFloatingTexts(prev => [...prev, {
       id: Math.random(),
-      x: x * 100 + 50, // Center in grid cell (rough calc)
-      y: y * 100,
+      x: centerX,
+      y: centerY,
       text,
       life: 1.0
     }]);
@@ -226,7 +239,7 @@ export const SnakeGame: React.FC<SnakeGameProps> = ({ user, onLogout, isDarkMode
     }
   };
 
-  const saveToRanking = () => {
+  const saveToRanking = async () => {
     // Only save if score > 0
     if (score === 0) return;
 
@@ -241,16 +254,8 @@ export const SnakeGame: React.FC<SnakeGameProps> = ({ user, onLogout, isDarkMode
       date: Date.now()
     };
 
-    const existingRankings = JSON.parse(localStorage.getItem('snake_global_rankings') || '[]');
-    const updatedRankings = [...existingRankings, newEntry];
-    
-    // Sort by score desc
-    updatedRankings.sort((a: RankingEntry, b: RankingEntry) => b.score - a.score);
-    
-    // Keep top 50 in storage (display limit handled in Ranking component)
-    const top50 = updatedRankings.slice(0, 50);
-    
-    localStorage.setItem('snake_global_rankings', JSON.stringify(top50));
+    // Salvar no backend (ranking global)
+    await rankingService.saveEntry(newEntry);
   };
 
   const gameOver = () => {
@@ -570,8 +575,8 @@ export const SnakeGame: React.FC<SnakeGameProps> = ({ user, onLogout, isDarkMode
              className="absolute w-2 h-2 rounded-full pointer-events-none"
              style={{
                 backgroundColor: p.color,
-                left: `${(p.x / GRID_SIZE)}%`,
-                top: `${(p.y / GRID_SIZE)}%`,
+                left: `${p.x}%`,
+                top: `${p.y}%`,
                 opacity: p.life,
                 transform: 'translate(-50%, -50%)'
              }}
@@ -584,8 +589,8 @@ export const SnakeGame: React.FC<SnakeGameProps> = ({ user, onLogout, isDarkMode
              key={t.id}
              className="absolute pointer-events-none font-bold text-green-500 text-lg z-50 shadow-black drop-shadow-md"
              style={{
-                left: `${(t.x / GRID_SIZE)}%`,
-                top: `${(t.y / GRID_SIZE)}%`,
+                left: `${t.x}%`,
+                top: `${t.y}%`,
                 opacity: t.life,
                 transform: 'translate(-50%, -50%)'
              }}
