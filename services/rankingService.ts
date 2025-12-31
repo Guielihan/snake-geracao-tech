@@ -57,5 +57,31 @@ export const rankingService = {
       return [];
     }
   },
+
+  // Limpar todo o ranking
+  async clearRankings(): Promise<boolean> {
+    try {
+      console.log('Limpando ranking...');
+      const response = await fetch(`${API_BASE_URL}/ranking`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Failed to clear ranking:', response.status, response.statusText, errorText);
+        return false;
+      }
+
+      const result = await response.json();
+      console.log('Ranking limpo com sucesso:', result);
+      return true;
+    } catch (error) {
+      console.error('Error clearing ranking:', error);
+      return false;
+    }
+  },
 };
 

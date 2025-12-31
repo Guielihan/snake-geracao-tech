@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Limpar Ranking - Snake Geração Tech</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #0a0a0f;
+            color: #fff;
+        }
+        .container {
+            background: #1a1a2e;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        h1 {
+            color: #4ade80;
+            margin-bottom: 20px;
+        }
+        button {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        button:hover {
+            background: #dc2626;
+        }
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+        .message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+        }
+        .success {
+            background: #10b981;
+            color: white;
+        }
+        .error {
+            background: #ef4444;
+            color: white;
+        }
+        .warning {
+            background: #f59e0b;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗑️ Limpar Ranking</h1>
+        <p>Esta ação irá <strong>apagar todos os dados do ranking</strong>.</p>
+        <p style="color: #f59e0b; margin: 20px 0;">⚠️ Esta ação não pode ser desfeita!</p>
+        
+        <div style="background: #2a2a3e; padding: 15px; border-radius: 5px; margin: 20px 0; text-align: left; font-size: 14px;">
+            <strong style="color: #4ade80;">💡 Como usar:</strong><br>
+            <strong>Opção 1:</strong> Abra a aplicação principal (index.html) e use o console do navegador (F12).<br>
+            <strong>Opção 2:</strong> Se estiver rodando localmente, execute via servidor (npm run dev ou npx serve).
+        </div>
+        
+        <button id="clearBtn" onclick="clearRanking()">Limpar Ranking</button>
+        <button onclick="checkRanking()">Verificar Ranking Atual</button>
+        
+        <div id="message" class="message"></div>
+        
+        <div style="margin-top: 30px; padding: 15px; background: #2a2a3e; border-radius: 5px; text-align: left; font-size: 12px;">
+            <strong style="color: #4ade80;">📋 Alternativa - Console do Navegador:</strong><br>
+            <code style="color: #a0a0a0; display: block; margin-top: 10px; padding: 10px; background: #1a1a2e; border-radius: 3px; overflow-x: auto;">
+                const API = 'https://snake-geracaotech.vercel.app/api';<br>
+                await fetch(API + '/ranking', {method: 'DELETE'}).then(r => r.json()).then(console.log);
+            </code>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'https://snake-geracaotech.vercel.app/api';
+
+        async function clearRanking() {
+            const btn = document.getElementById('clearBtn');
+            const message = document.getElementById('message');
+            
+            if (!confirm('Tem certeza que deseja limpar TODO o ranking? Esta ação não pode ser desfeita!')) {
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = 'Limpando...';
+            message.style.display = 'none';
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/ranking`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    mode: 'cors',
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Erro ${response.status}: ${response.statusText}. ${errorText}`);
+                }
+
+                const result = await response.json();
+                message.className = 'message success';
+                message.textContent = '✅ Ranking limpo com sucesso!';
+                message.style.display = 'block';
+            } catch (error) {
+                message.className = 'message error';
+                let errorMsg = error.message;
+                
+                // Detectar se é erro de CORS/bloqueio do navegador
+                if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError') || error.message.includes('CORS')) {
+                    errorMsg = 'Erro de conexão. Se você abriu este arquivo diretamente (file://), o navegador pode bloquear requisições. Tente: 1) Executar via servidor local (npm run dev) ou 2) Usar o console do navegador na aplicação principal.';
+                }
+                
+                message.textContent = `❌ Erro ao limpar ranking: ${errorMsg}`;
+                message.style.display = 'block';
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Limpar Ranking';
+            }
+        }
+
+        async function checkRanking() {
+            const message = document.getElementById('message');
+            message.style.display = 'none';
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/ranking`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    mode: 'cors',
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Erro ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                const count = data.rankings?.length || 0;
+                
+                message.className = 'message ' + (count > 0 ? 'warning' : 'success');
+                message.textContent = `📊 Ranking atual: ${count} entrada(s)`;
+                message.style.display = 'block';
+            } catch (error) {
+                message.className = 'message error';
+                let errorMsg = error.message;
+                
+                // Detectar se é erro de CORS/bloqueio do navegador
+                if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError') || error.message.includes('CORS')) {
+                    errorMsg = 'Erro de conexão. Se você abriu este arquivo diretamente (file://), o navegador pode bloquear requisições. Tente usar o console do navegador na aplicação principal.';
+                }
+                
+                message.textContent = `❌ Erro ao verificar ranking: ${errorMsg}`;
+                message.style.display = 'block';
+            }
+        }
+
+        // Verificar ranking ao carregar a página
+        window.onload = checkRanking;
+    </script>
+</body>
+</html>
+

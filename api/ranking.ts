@@ -17,7 +17,7 @@ export default async function handler(
 ) {
   // Configurar CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   if (req.method === 'OPTIONS') {
@@ -53,7 +53,28 @@ export default async function handler(
       if (kv) {
         // Usar Vercel KV para persistência global
         let rankings: RankingEntry[] = (await kv.get(RANKING_KEY)) || [];
-        rankings.push(newEntry);
+        
+        // Verificar se já existe uma entrada com o mesmo nickname
+        const existingIndex = rankings.findIndex(
+          (r) => r.nickname.toLowerCase() === newEntry.nickname.toLowerCase()
+        );
+        
+        if (existingIndex !== -1) {
+          // Se existe e a nova pontuação é maior, atualizar a entrada existente
+          if (newEntry.score > rankings[existingIndex].score) {
+            rankings[existingIndex] = {
+              ...rankings[existingIndex],
+              score: newEntry.score,
+              timestamp: newEntry.timestamp,
+              date: newEntry.date,
+            };
+          }
+          // Se a pontuação não é maior, não fazer nada (manter a entrada existente)
+        } else {
+          // Se não existe, adicionar nova entrada
+          rankings.push(newEntry);
+        }
+        
         rankings.sort((a, b) => b.score - a.score);
         rankings = rankings.slice(0, 100); // Manter top 100
         await kv.set(RANKING_KEY, rankings);
@@ -79,6 +100,19 @@ export default async function handler(
       } else {
         // Vercel KV não configurado - retornar array vazio
         return res.status(200).json({ rankings: [] });
+      }
+    }
+
+    if (req.method === 'DELETE') {
+      if (kv) {
+        // Limpar todo o ranking
+        await kv.set(RANKING_KEY, []);
+        return res.status(200).json({ success: true, message: 'Ranking limpo com sucesso' });
+      } else {
+        return res.status(503).json({ 
+          error: 'Database not configured',
+          message: 'Por favor, configure Vercel KV no painel da Vercel para habilitar ranking global.'
+        });
       }
     }
 

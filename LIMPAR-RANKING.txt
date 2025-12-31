@@ -1,0 +1,18 @@
+═══════════════════════════════════════════════════════════════
+  🗑️ LIMPAR RANKING - COMANDO RÁPIDO
+═══════════════════════════════════════════════════════════════
+
+1. Abra a aplicação no navegador (index.html)
+2. Pressione F12 para abrir o Console
+3. Cole este comando e pressione Enter:
+
+await fetch('https://snake-geracaotech.vercel.app/api/ranking',{method:'DELETE'}).then(r=>r.json()).then(r=>alert('✅ Ranking limpo!')).catch(e=>alert('❌ Erro: '+e.message));
+
+═══════════════════════════════════════════════════════════════
+
+OU use a função do serviço (se já estiver carregado):
+
+await rankingService.clearRankings();
+
+═══════════════════════════════════════════════════════════════
+

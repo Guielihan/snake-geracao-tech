@@ -1,0 +1,43 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0');
+
+body {
+  /* Default background set in App.tsx via classes, but safe fallback here */
+  background-color: #111827;
+  font-family: 'Inter', sans-serif;
+  overflow: hidden; /* Prevent scroll bounce on mobile */
+  touch-action: none;
+}
+
+.pixel-font {
+  font-family: 'Press Start 2P', cursive;
+}
+
+/* Custom scrollbar for chat logs */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Ranking pulse animation */
+@keyframes pulse-red {
+  0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+  70% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+.animate-pulse-red {
+  animation: pulse-red 2s infinite;
+}
+
+/* Floating animation for podium */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+  100% { transform: translateY(0px); }
+}
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}

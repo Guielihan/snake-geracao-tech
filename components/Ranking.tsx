@@ -85,7 +85,7 @@ export const Ranking: React.FC<RankingProps> = ({ onBack }) => {
 
   return (
     // Main container set to h-screen to force scroll within children
-    <div className="w-full max-w-md mx-auto h-screen flex flex-col relative bg-gray-100 dark:bg-[#0a0a0f] transition-colors duration-300 overflow-hidden">
+    <main className="w-full max-w-md mx-auto h-screen flex flex-col relative bg-gray-100 dark:bg-[#0a0a0f] transition-colors duration-300 overflow-hidden" aria-label="Ranking de Jogadores">
       
       <style>{`
         @keyframes popIn {
@@ -108,7 +108,7 @@ export const Ranking: React.FC<RankingProps> = ({ onBack }) => {
       <div className="absolute top-0 left-0 w-full h-96 bg-gradient-to-b from-green-500/10 to-transparent pointer-events-none z-0"></div>
 
       {/* Header */}
-      <header className="relative z-10 px-6 pt-8 pb-4 flex-shrink-0">
+      <header className="relative z-10 px-4 sm:px-6 pt-6 sm:pt-8 pb-4 flex-shrink-0">
         <div className="flex items-center justify-between mb-2">
           <button 
             onClick={() => { playSound.click(); onBack(); }}
@@ -118,8 +118,8 @@ export const Ranking: React.FC<RankingProps> = ({ onBack }) => {
           </button>
           
           <div className="text-center">
-            <h1 className="text-xl font-extrabold tracking-tight text-gray-900 dark:text-white">Geração Tech 3.0</h1>
-            <p className="text-xs font-bold text-green-600 dark:text-green-500 uppercase tracking-wider mt-1">Ranking dos Alunos</p>
+            <h1 className="text-lg sm:text-xl font-extrabold tracking-tight text-gray-900 dark:text-white">Geração Tech 3.0</h1>
+            <p className="text-[10px] sm:text-xs font-bold text-green-600 dark:text-green-500 uppercase tracking-wider mt-1">Ranking dos Alunos</p>
           </div>
 
           <button 
@@ -141,7 +141,7 @@ export const Ranking: React.FC<RankingProps> = ({ onBack }) => {
 
       {/* EMPTY STATE */}
       {data.length === 0 ? (
-        <div className={`flex-1 flex flex-col items-center justify-center z-10 p-8 text-center transition-opacity duration-700 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
+        <section className={`flex-1 flex flex-col items-center justify-center z-10 p-8 text-center transition-opacity duration-700 ${isVisible ? 'opacity-100' : 'opacity-0'}`} aria-label="Estado vazio do ranking">
           <div className="w-24 h-24 bg-gray-200 dark:bg-gray-800 rounded-full flex items-center justify-center mb-6 animate-pulse">
             <span className="material-symbols-rounded text-5xl text-gray-400">trophy</span>
           </div>
@@ -155,20 +155,20 @@ export const Ranking: React.FC<RankingProps> = ({ onBack }) => {
           >
             JOGAR AGORA
           </button>
-        </div>
+        </section>
       ) : (
         <>
           {/* Podium */}
-          <section className="relative z-10 px-4 py-6 grid grid-cols-3 gap-2 items-end mb-4 flex-shrink-0">
+          <section className="relative z-10 px-2 sm:px-4 py-4 sm:py-6 grid grid-cols-3 gap-1 sm:gap-2 items-end mb-4 flex-shrink-0">
             
             {/* Second Place */}
             <div className={`flex flex-col items-center order-1 ${isVisible ? 'animate-pop-in' : 'opacity-0'}`} style={{ animationDelay: '0.2s' }}>
               {second && (
                 <>
                   <div className="relative mb-2 group">
-                    <div className="w-20 h-20 rounded-full p-1 border-4 border-slate-300 bg-white dark:bg-gray-800 shadow-lg relative z-10 flex items-center justify-center overflow-hidden transition-transform group-hover:scale-105">
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full p-1 border-2 sm:border-4 border-slate-300 bg-white dark:bg-gray-800 shadow-lg relative z-10 flex items-center justify-center overflow-hidden transition-transform group-hover:scale-105">
                        <div className={`w-full h-full rounded-full flex items-center justify-center ${getAvatarColor(second.gender)}`}>
-                          <span className="font-bold text-white text-xl">
+                          <span className="font-bold text-white text-base sm:text-xl">
                             {getInitials(second.nickname)}
                           </span>
                        </div>
@@ -196,9 +196,9 @@ export const Ranking: React.FC<RankingProps> = ({ onBack }) => {
                     
                     <div className="absolute inset-0 bg-amber-400/40 blur-xl rounded-full animate-pulse"></div>
                     
-                    <div className="w-28 h-28 rounded-full p-1 border-[5px] border-amber-400 bg-white dark:bg-gray-800 shadow-xl relative z-10 flex items-center justify-center overflow-hidden transition-transform group-hover:scale-105">
+                    <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full p-1 border-[3px] sm:border-[5px] border-amber-400 bg-white dark:bg-gray-800 shadow-xl relative z-10 flex items-center justify-center overflow-hidden transition-transform group-hover:scale-105">
                        <div className={`w-full h-full rounded-full flex items-center justify-center ${getAvatarColor(first.gender)}`}>
-                          <span className="font-bold text-white text-3xl">
+                          <span className="font-bold text-white text-2xl sm:text-3xl">
                             {getInitials(first.nickname)}
                           </span>
                        </div>
@@ -224,9 +224,9 @@ export const Ranking: React.FC<RankingProps> = ({ onBack }) => {
               {third && (
                 <>
                   <div className="relative mb-2 group">
-                    <div className="w-20 h-20 rounded-full p-1 border-4 border-amber-700 bg-white dark:bg-gray-800 shadow-lg relative z-10 flex items-center justify-center overflow-hidden transition-transform group-hover:scale-105">
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full p-1 border-2 sm:border-4 border-amber-700 bg-white dark:bg-gray-800 shadow-lg relative z-10 flex items-center justify-center overflow-hidden transition-transform group-hover:scale-105">
                        <div className={`w-full h-full rounded-full flex items-center justify-center ${getAvatarColor(third.gender)}`}>
-                          <span className="font-bold text-white text-xl">
+                          <span className="font-bold text-white text-base sm:text-xl">
                             {getInitials(third.nickname)}
                           </span>
                        </div>
@@ -246,7 +246,7 @@ export const Ranking: React.FC<RankingProps> = ({ onBack }) => {
           </section>
 
           {/* List - Added flex-1 and overflow-y-auto to enable scrolling */}
-          <section className="flex-1 px-4 pb-20 relative z-10 space-y-3 overflow-y-auto scrollbar-hide">
+          <section className="flex-1 px-2 sm:px-4 pb-20 relative z-10 space-y-2 sm:space-y-3 overflow-y-auto scrollbar-hide">
             {rest.map((player, index) => {
               const bgClass = getAvatarColor(player.gender);
               // Staggered animation for list items
@@ -267,8 +267,8 @@ export const Ranking: React.FC<RankingProps> = ({ onBack }) => {
                   </div>
                   
                   <div className="flex-1 min-w-0">
-                    <h4 className="font-bold text-gray-800 dark:text-gray-100 truncate">{player.nickname}</h4>
-                    <div className="flex items-center space-x-3 mt-0.5">
+                    <h4 className="font-bold text-sm sm:text-base text-gray-800 dark:text-gray-100 truncate">{player.nickname}</h4>
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-3 sm:space-x-3 mt-0.5">
                       <div className="flex items-center text-xs font-medium text-green-600 dark:text-green-400">
                         <span className="material-symbols-rounded text-[14px] mr-1">nutrition</span>
                         {player.score}
@@ -293,6 +293,6 @@ export const Ranking: React.FC<RankingProps> = ({ onBack }) => {
           </section>
         </>
       )}
-    </div>
+    </main>
   );
 };

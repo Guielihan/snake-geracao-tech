@@ -408,15 +408,15 @@ export const SnakeGame: React.FC<SnakeGameProps> = ({ user, onLogout, isDarkMode
   const currentLevel = Math.floor(score / 50) + 1;
 
   return (
-    <div className="flex flex-col items-center min-h-screen w-full bg-gray-100 dark:bg-[#0a0a0f] text-gray-900 dark:text-gray-100 p-4 overflow-hidden touch-none select-none font-sans transition-colors duration-300">
+    <section className="flex flex-col items-center min-h-screen w-full bg-gray-100 dark:bg-[#0a0a0f] text-gray-900 dark:text-gray-100 p-4 overflow-hidden touch-none select-none font-sans transition-colors duration-300" aria-label="Jogo da Cobrinha">
       
       {/* Header */}
       <header 
         className="flex flex-col gap-2 mb-4 bg-white/80 dark:bg-gray-900/80 p-4 rounded-xl border border-gray-200 dark:border-gray-800 shadow-xl backdrop-blur-md transition-colors duration-300"
         style={{ width: 'min(90vw, 500px)' }}
       >
-        <div className="flex justify-between items-center w-full">
-            <div className="flex items-center flex-1 min-w-0 mr-2">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center w-full gap-2 sm:gap-0">
+            <div className="flex items-center flex-1 min-w-0 mr-2 w-full sm:w-auto">
             {/* Logout Button (Left Side) */}
             <button 
                 onClick={() => { playSound.click(); onLogout(); }}
@@ -448,13 +448,13 @@ export const SnakeGame: React.FC<SnakeGameProps> = ({ user, onLogout, isDarkMode
                 )}
             </button>
 
-            <div className="text-right hidden sm:block">
+            <div className="text-right hidden md:block">
                 <h2 className="text-[10px] uppercase tracking-widest text-gray-500 font-bold">Recorde</h2>
-                <div className={`font-bold text-xl font-mono ${isNewRecord ? 'text-green-500 scale-110' : 'text-yellow-600 dark:text-yellow-500'} transition-all drop-shadow-[0_0_5px_rgba(234,179,8,0.5)]`}>{highScore}</div>
+                <div className={`font-bold text-lg md:text-xl font-mono ${isNewRecord ? 'text-green-500 scale-110' : 'text-yellow-600 dark:text-yellow-500'} transition-all drop-shadow-[0_0_5px_rgba(234,179,8,0.5)]`}>{highScore}</div>
             </div>
             <div className="text-right">
                 <h2 className="text-[10px] uppercase tracking-widest text-gray-500 font-bold">Pontos</h2>
-                <div className="font-bold text-xl font-mono text-gray-800 dark:text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">{score}</div>
+                <div className="font-bold text-lg md:text-xl font-mono text-gray-800 dark:text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">{score}</div>
             </div>
             
             <button 
@@ -491,22 +491,24 @@ export const SnakeGame: React.FC<SnakeGameProps> = ({ user, onLogout, isDarkMode
                 style={{ left: `calc(${progressPercent}% - 6px)` }}
              ></div>
         </div>
-        <div className="flex justify-between text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 px-0.5">
+        <div className="flex justify-between text-[8px] sm:text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 px-0.5">
             <span>Nível {currentLevel}</span>
-            <span>Próximo: {currentLevel * 50}</span>
+            <span className="hidden sm:inline">Próximo: {currentLevel * 50}</span>
+            <span className="sm:hidden">→ {currentLevel * 50}</span>
         </div>
       </header>
 
       {/* Game Board Container */}
-      <div 
+      <section 
         className={`relative bg-gray-200 dark:bg-gray-900 rounded-xl border-4 ${shake ? 'border-red-500 translate-x-1' : (screenFlash ? 'border-green-400' : 'border-gray-300 dark:border-gray-800')} shadow-2xl overflow-hidden touch-none transition-all duration-100`}
         style={{
-          width: 'min(90vw, 500px)',
-          height: 'min(90vw, 500px)',
+          width: 'min(90vw, 90vh, 500px)',
+          height: 'min(90vw, 90vh, 500px)',
           boxShadow: isDarkMode ? '0 0 40px rgba(0,0,0,0.6)' : '0 10px 30px rgba(0,0,0,0.1)'
         }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
+        aria-label="Tabuleiro do Jogo"
       >
         {/* Game Grid */}
         <div 
@@ -669,11 +671,14 @@ export const SnakeGame: React.FC<SnakeGameProps> = ({ user, onLogout, isDarkMode
             >
               JOGAR
             </button>
-            <div className="mt-4 text-xs text-gray-400 dark:text-gray-600 animate-pulse hidden md:block">
+            <div className="mt-4 text-xs text-gray-400 dark:text-gray-600 animate-pulse hidden lg:block">
                Use as setas do teclado para mover
             </div>
-            <div className="mt-4 text-xs text-gray-400 dark:text-gray-600 animate-pulse md:hidden">
-               Deslize o dedo para controlar a cobra
+            <div className="mt-4 text-xs text-gray-400 dark:text-gray-600 animate-pulse hidden sm:block lg:hidden">
+               Deslize o dedo ou use as setas
+            </div>
+            <div className="mt-4 text-xs text-gray-400 dark:text-gray-600 animate-pulse sm:hidden">
+               Deslize o dedo para controlar
             </div>
           </div>
         )}
@@ -698,7 +703,7 @@ export const SnakeGame: React.FC<SnakeGameProps> = ({ user, onLogout, isDarkMode
 
         {/* GAME OVER */}
         {status === GameStatus.GAME_OVER && (
-          <div className="absolute inset-0 z-30 bg-red-100/90 dark:bg-red-950/90 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center transition-colors duration-300">
+          <section className="absolute inset-0 z-30 bg-red-100/90 dark:bg-red-950/90 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center transition-colors duration-300" aria-label="Tela de Game Over">
             <h2 className="text-3xl md:text-4xl font-bold text-red-600 dark:text-white mb-2 pixel-font drop-shadow-[0_0_10px_rgba(255,0,0,0.5)] whitespace-nowrap">GAME OVER</h2>
             <div className="bg-white/60 dark:bg-black/40 p-6 rounded-xl mb-8 border border-red-200 dark:border-red-500/30 w-full max-w-[200px]">
               <p className="text-red-800 dark:text-red-300 text-xs uppercase tracking-widest mb-1">Score</p>
@@ -713,13 +718,13 @@ export const SnakeGame: React.FC<SnakeGameProps> = ({ user, onLogout, isDarkMode
             >
               MENU
             </button>
-          </div>
+          </section>
         )}
-      </div>
+      </section>
 
-      <div className="mt-6 text-xs font-mono text-gray-400 dark:text-gray-600 opacity-75">
+      <footer className="mt-6 text-xs font-mono text-gray-400 dark:text-gray-600 opacity-75">
         dev: guielihan
-      </div>
-    </div>
+      </footer>
+    </section>
   );
 };

@@ -40,9 +40,9 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onShowRanking, is
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4 w-full max-w-md mx-auto">
+    <section className="flex flex-col items-center justify-center min-h-screen p-4 w-full max-w-md mx-auto" aria-label="Tela de Login">
       
-      <div className="relative w-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border border-gray-200 dark:border-gray-700 p-8 rounded-2xl shadow-2xl transition-colors duration-300">
+      <div className="relative w-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border border-gray-200 dark:border-gray-700 p-4 sm:p-6 md:p-8 rounded-2xl shadow-2xl transition-colors duration-300">
         
         {/* Theme Toggle Inside Card - Styled */}
         <button 
@@ -58,8 +58,8 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onShowRanking, is
         </button>
 
         <div className="mb-8 text-center mt-2">
-          <h1 className="text-4xl font-bold text-green-500 dark:text-green-400 pixel-font mb-2">SNAKE TECH</h1>
-          <p className="text-gray-500 dark:text-gray-400 text-sm">Entre na arena ao vivo</p>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-green-500 dark:text-green-400 pixel-font mb-2">SNAKE TECH</h1>
+          <p className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm">Entre na arena ao vivo</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -75,7 +75,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onShowRanking, is
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Idade</label>
               <input
@@ -122,10 +122,10 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onShowRanking, is
           </div>
         </form>
 
-        <div className="mt-6 text-center text-xs font-mono text-gray-400 dark:text-gray-600 opacity-75">
+        <footer className="mt-6 text-center text-xs font-mono text-gray-400 dark:text-gray-600 opacity-75">
           dev: guielihan
-        </div>
+        </footer>
       </div>
-    </div>
+    </section>
   );
 };

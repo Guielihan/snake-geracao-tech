@@ -26,7 +26,7 @@ export default function App() {
 
   return (
     <div className={isDarkMode ? 'dark' : ''}>
-      <div className="min-h-screen transition-colors duration-300 bg-gray-100 text-gray-900 dark:bg-[#0a0a0f] dark:text-gray-100 font-sans">
+      <main className="min-h-screen transition-colors duration-300 bg-gray-100 text-gray-900 dark:bg-[#0a0a0f] dark:text-gray-100 font-sans">
         {view === 'LOGIN' && (
           <LoginForm 
             onLogin={handleLogin} 
@@ -50,7 +50,7 @@ export default function App() {
             onBack={() => setView('LOGIN')} 
           />
         )}
-      </div>
+      </main>
     </div>
   );
 }
