@@ -3,13 +3,43 @@ import { RankingEntry } from '../types';
 import { playSound } from '../utils/audioUtils';
 import { rankingService } from '../services/rankingService';
 
+import { UserProfile } from '../types';
+
 interface RankingProps {
   onBack: () => void;
+  currentUser?: UserProfile | null;
 }
 
-export const Ranking: React.FC<RankingProps> = ({ onBack }) => {
+// Lista de nicknames autorizados para limpar o ranking (apenas desenvolvedor)
+const ADMIN_NICKNAMES = ['guielihan', 'Guielihan', 'GUIELIHAN'];
+
+export const Ranking: React.FC<RankingProps> = ({ onBack, currentUser }) => {
   const [data, setData] = useState<RankingEntry[]>([]);
   const [isVisible, setIsVisible] = useState(false);
+  const [isClearing, setIsClearing] = useState(false);
+  
+  // Verificar se o usuário atual é administrador
+  // Verifica tanto o usuário logado quanto o perfil salvo no localStorage
+  const checkAdmin = () => {
+    if (currentUser && ADMIN_NICKNAMES.includes(currentUser.nickname)) {
+      return true;
+    }
+    // Verificar também no localStorage caso o usuário tenha acessado o ranking sem estar logado
+    try {
+      const savedProfile = localStorage.getItem('snake_last_profile');
+      if (savedProfile) {
+        const parsed = JSON.parse(savedProfile);
+        if (parsed.nickname && ADMIN_NICKNAMES.includes(parsed.nickname)) {
+          return true;
+        }
+      }
+    } catch (e) {
+      // Ignorar erros de parsing
+    }
+    return false;
+  };
+  
+  const isAdmin = checkAdmin();
 
   useEffect(() => {
     // Carregar dados do backend (ranking global)
@@ -81,6 +111,33 @@ export const Ranking: React.FC<RankingProps> = ({ onBack }) => {
     return name.slice(0, 2).toUpperCase();
   };
 
+  const handleClearRanking = async () => {
+    if (!confirm('⚠️ ATENÇÃO: Esta ação irá apagar TODOS os dados do ranking permanentemente!\n\nTem certeza que deseja continuar?')) {
+      return;
+    }
+
+    if (!confirm('⚠️ ÚLTIMA CONFIRMAÇÃO:\n\nIsso não pode ser desfeito. Todos os rankings serão perdidos.\n\nDeseja realmente limpar o ranking?')) {
+      return;
+    }
+
+    setIsClearing(true);
+    try {
+      const success = await rankingService.clearRankings();
+      if (success) {
+        playSound.fanfare();
+        setData([]);
+        alert('✅ Ranking limpo com sucesso!');
+      } else {
+        throw new Error('Falha ao limpar ranking');
+      }
+    } catch (error) {
+      console.error('Error clearing ranking:', error);
+      alert('❌ Erro ao limpar ranking. Tente novamente.');
+    } finally {
+      setIsClearing(false);
+    }
+  };
+
   const [first, second, third, ...rest] = data;
 
   return (
@@ -122,13 +179,27 @@ export const Ranking: React.FC<RankingProps> = ({ onBack }) => {
             <p className="text-[10px] sm:text-xs font-bold text-green-600 dark:text-green-500 uppercase tracking-wider mt-1">Ranking dos Alunos</p>
           </div>
 
-          <button 
-            onClick={() => { playSound.click(); handleShare(); }}
-            className="p-2 rounded-full hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors text-gray-800 dark:text-white group"
-            title="Compartilhar no WhatsApp"
-          >
-            <span className="material-symbols-rounded text-2xl group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors">share</span>
-          </button>
+          <div className="flex items-center gap-2">
+            {isAdmin && (
+              <button 
+                onClick={() => { playSound.click(); handleClearRanking(); }}
+                disabled={isClearing}
+                className="p-2 rounded-full hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors text-gray-800 dark:text-white group disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Limpar Ranking (Administrador)"
+              >
+                <span className="material-symbols-rounded text-2xl group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
+                  {isClearing ? 'hourglass_empty' : 'delete_sweep'}
+                </span>
+              </button>
+            )}
+            <button 
+              onClick={() => { playSound.click(); handleShare(); }}
+              className="p-2 rounded-full hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors text-gray-800 dark:text-white group"
+              title="Compartilhar no WhatsApp"
+            >
+              <span className="material-symbols-rounded text-2xl group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors">share</span>
+            </button>
+          </div>
         </div>
 
         <div className="flex justify-center mt-2">

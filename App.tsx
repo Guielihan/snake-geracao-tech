@@ -47,7 +47,8 @@ export default function App() {
 
         {view === 'RANKING' && (
           <Ranking 
-            onBack={() => setView('LOGIN')} 
+            onBack={() => setView('LOGIN')}
+            currentUser={user}
           />
         )}
       </main>
